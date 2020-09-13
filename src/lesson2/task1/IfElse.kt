@@ -6,6 +6,7 @@ import lesson1.task1.discriminant
 import lesson1.task1.sqr
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
@@ -109,10 +110,14 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
-    if ((kingX != rookX1) && (kingX != rookX2) && (kingY != rookY1) && (kingY != rookY2)) return 0
-    if (((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2))) return 3
-    return if ((kingX == rookX1) || (kingY == rookY1)) 1
-    else 2
+    val rook1Thr = kingX == rookX1 || kingY == rookY1
+    val rook2Thr = kingX == rookX2 || kingY == rookY2
+    return when {
+        rook1Thr && rook2Thr -> 3
+        rook1Thr -> 1
+        rook2Thr -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -130,10 +135,14 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    if ((kingX != rookX) && (kingY != rookY) && (abs(kingX - bishopX) != abs(kingY - bishopY))) return 0
-    if (((kingX == rookX) || (kingY == rookY)) && (abs(kingX - bishopX) == abs(kingY - bishopY))) return 3
-    return if ((kingX == rookX) || (kingY == rookY)) 1
-    else 2
+    val rookThr = kingX == rookX || kingY == rookY
+    val bishopThr = abs(kingX - bishopX) == abs(kingY - bishopY)
+    return when {
+        rookThr && bishopThr -> 3
+        rookThr -> 1
+        bishopThr -> 2
+        else -> 0
+    }
 }
 /**
  * Простая (2 балла)
@@ -146,7 +155,7 @@ fun rookOrBishopThreatens(
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     val max = maxOf(a, b, c)
     val min = minOf(a, b, c)
-    val middle = if ((a < max) && (a > min)) a else if ((b < max) && (b > min)) b else c
+    val middle = a + b + c - max - min
     if (max > min + middle) return -1
     if (sqr(max) < sqr(min) + sqr(middle)) return 0
     return if (sqr(max) == sqr(min) + sqr(middle)) 1
@@ -163,9 +172,5 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     if (c > b || d < a) return -1
-    if (c == b || d == a || (a == b && a == c || (a < c && b == c))) return 0
-    return if (b >= d)
-        if (c > a) (d - c) else (d - a)
-    else
-        if (c > a) (b - c) else (b - a)
+    return min(b, d) - max(a, c)
 }
