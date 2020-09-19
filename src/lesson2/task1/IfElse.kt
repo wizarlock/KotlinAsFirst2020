@@ -72,12 +72,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String {
-    return if (age % 100 in 10..20) "$age лет"
-    else if (age % 10 == 1) "$age год"
-    else if (age % 10 in 2..4) "$age года"
-    else "$age лет"
+    return when {
+        age % 100 in 10..20 -> "$age лет"
+        age % 10 == 1 -> "$age год"
+        age % 10 in 2..4 -> "$age года"
+        else -> "$age лет"
+    }
 }
-
 /**
  * Простая (2 балла)
  *
@@ -91,11 +92,12 @@ fun timeForHalfWay(
     t3: Double, v3: Double
 ): Double {
     val halfway = (v1 * t1 + v2 * t2 + v3 * t3) / 2
-    return if (v1 * t1 >= halfway) (halfway / v1)
-    else if (v1 * t1 + v2 * t2 >= halfway) (t1 + (halfway - v1 * t1) / v2)
-    else (t1 + t2 + (halfway - v1 * t1 - v2 * t2) / v3)
+    return when {
+        v1 * t1 >= halfway -> halfway / v1
+        v1 * t1 + v2 * t2 >= halfway -> (t1 + (halfway - v1 * t1) / v2)
+        else -> (t1 + t2 + (halfway - v1 * t1 - v2 * t2) / v3)
+    }
 }
-
 /**
  * Простая (2 балла)
  *
@@ -156,12 +158,13 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val max = maxOf(a, b, c)
     val min = minOf(a, b, c)
     val middle = a + b + c - max - min
-    if (max > min + middle) return -1
-    if (sqr(max) < sqr(min) + sqr(middle)) return 0
-    return if (sqr(max) == sqr(min) + sqr(middle)) 1
-    else 2
+    return when {
+        max > min + middle -> -1
+        sqr(max) < sqr(min) + sqr(middle) -> 0
+        sqr(max) == sqr(min) + sqr(middle) -> 1
+        else -> 2
+    }
 }
-
 /**
  * Средняя (3 балла)
  *
