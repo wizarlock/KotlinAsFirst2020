@@ -44,9 +44,9 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
 fun daysInMonth(month: Int, year: Int): Int {
     return when {
         month in 1..7 step 2 || month in 8..12 step 2 -> 31
-        year % 4 == 0 && month == 2 && year % 100 != 0 || year % 400 == 0 -> 29
-        month == 2 -> 28
-        else -> 30
+        month in 4..6 step 2 || month in 9..11 step 2 -> 30
+        year % 4 == 0 && month == 2 && year % 100 != 0 || year % 400 == 0 -> 29 // условие для високосного года
+        else -> 28
     }
 }
 
