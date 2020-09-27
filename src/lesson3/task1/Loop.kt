@@ -77,11 +77,11 @@ fun digitCountInNumber(n: Int, m: Int): Int =
 fun digitNumber(n: Int): Int {
     var number = n
     var sum = 0
-    while (number > 0) {
+    do {
         number /= 10
         sum++
-    }
-    return if (sum == 0) 1 else sum
+    } while (number != 0)
+    return sum
 }
 
 /**
@@ -90,7 +90,17 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = if (n < 3) 1 else fib(n - 1) + fib(n - 2)
+fun fib(n: Int): Int {
+    var fib1 = 0
+    var fibN = 1
+    var fib: Int
+    for (i in 2..n) {
+        fib = fibN + fib1
+        fib1 = fibN
+        fibN = fib
+    }
+    return fibN
+}
 
 /**
  * Простая (2 балла)
@@ -98,12 +108,10 @@ fun fib(n: Int): Int = if (n < 3) 1 else fib(n - 1) + fib(n - 2)
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var min = 1
-    for (i in 2..n) {
-        if (n % i == 0) min = i
-        if (min != 1) break
+    for (i in 2..sqrt(n.toDouble()).toInt()) {
+        if (n % i == 0) return i
     }
-    return min
+    return n
 }
 
 
@@ -112,14 +120,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var max = n
-    for (i in n - 1 downTo 1) {
-        if (n % i == 0) max = i
-        if (max != n) break
-    }
-    return max
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая (2 балла)
@@ -154,14 +155,17 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    var min = 0
-    for (i in 1..n * m) {
-        if (i % n == 0 && i % m == 0) min = i
-        if (min != 0) break
+fun gcd(k: Int, l: Int): Int {
+    var a = k
+    var b = l
+    while ((a != 0) && (b != 0)) {
+        if (a > b) a %= b else b %= a
     }
-    return min
+    return a + b
 }
+
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
+
 
 /**
  * Средняя (3 балла)
@@ -170,13 +174,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var max = 0
-    for (i in 1..maxOf(m, n)) {
-        if (m % i == 0 && n % i == 0) max = i
-    }
-    return max == 1
-}
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -186,7 +184,7 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    for (i in 1..sqrt(n.toDouble()).toInt()) {
+    for (i in 0..sqrt(n.toDouble()).toInt()) {
         if (i * i in m..n) return true
     }
     return false
