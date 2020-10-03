@@ -164,7 +164,7 @@ fun gcd(k: Int, l: Int): Int {
     return a + b
 }
 
-fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
+fun lcm(m: Int, n: Int): Int = m / gcd(m, n) * n
 
 
 /**

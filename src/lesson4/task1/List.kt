@@ -127,8 +127,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
 fun abs(v: List<Double>): Double {
     var res = 0.0
     for (element in v) res += sqr(element)
-    return if (v.isEmpty()) 0.0 else
-        sqrt(res)
+    return sqrt(res)
 }
 
 /**
@@ -139,8 +138,8 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double {
     var res = 0.0
     for (element in list) res += element
-    return if (list.isEmpty()) 0.0 else
-        res / list.size
+    return if (list.isEmpty()) res // тут надо юзать if, т.к при пустом списке list.size == 0
+    else res / list.size
 }
 
 /**
@@ -182,11 +181,8 @@ fun times(a: List<Int>, b: List<Int>): Int {
  */
 fun polynom(p: List<Int>, x: Int): Int {
     var res = 0
-    var m = 0
-    for (element in p) {
-        res += element * x.toDouble().pow(m).toInt()
-        m++
-    }
+    if (p.isNotEmpty()) res = p.last()
+    for (i in p.size - 2 downTo 0) res = p[i] + x * res
     return res
 }
 
@@ -250,13 +246,14 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     val list = mutableListOf<Int>()
     var num = n
-    while (num > 0) {
+    do {
         list.add(num % base)
         num /= base
-    }
-    list.reverse()
+    } while (num > 0)
+    list.reverse(   )
     return list
 }
+
 
 /**
  * Сложная (4 балла)
@@ -271,12 +268,13 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun convertToString(n: Int, base: Int): String {
     val list = convert(n, base)
-    var result = ""
+    val result = StringBuilder()
     for (i in list.indices) {
-        result +=
+        result.append(
             if (list[i] > 9) (list[i] - 10 + 'a'.toInt()).toChar().toString() else list[i].toString()
+        )
     }
-    return result
+return result.toString()
 }
 
 /**
@@ -288,10 +286,10 @@ fun convertToString(n: Int, base: Int): String {
  */
 fun decimal(digits: List<Int>, base: Int): Int {
     var result = 0
-    var v = digits.size - 1
-    for (i in digits.indices) {
-        result += digits[i] * base.toDouble().pow(v).toInt()
-        v -= 1
+    var category = 1
+    for (i in digits.indices.reversed()) {
+        result += digits[i] * category
+        category *= base
     }
     return result
 }
@@ -326,7 +324,7 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO() //сделаю в следующих сабмитах
+fun roman(n: Int): String = TODO()
 
 /**
  * Очень сложная (7 баллов)
