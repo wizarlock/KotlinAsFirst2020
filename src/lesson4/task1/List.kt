@@ -4,8 +4,6 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import java.nio.file.Files.size
-import kotlin.math.pow
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -379,7 +377,6 @@ fun russian(n: Int): String {
     val result = StringBuilder()
     var flag = 1 //разряды
     var k = n
-    val m = n
     if (k == 0) return "ноль"
     while (k > 0) {
         if (flag == 1) {
@@ -418,7 +415,7 @@ fun russian(n: Int): String {
                             if (k % 10 == i) result.insert(0, list1[i] + "тысяч ")
         }
         if (flag == 5) {
-            if (m / 1000 % 10 == 0) {
+            if (n / 1000 % 10 == 0) {
                 for (i in 1..list2.size)
                     if (k % 10 == i) result.insert(0, list2[i] + "тысяч ")
             } else
@@ -426,7 +423,7 @@ fun russian(n: Int): String {
                     if (k % 10 == i) result.insert(0, list2[i])
         }
         if (flag == 6)
-            if (m / 1000 % 10 == 0 && m / 10000 % 10 == 0) {
+            if (n / 1000 % 10 == 0 && n / 10000 % 10 == 0) {
                 for (i in list3.indices) {
                     if (k % 10 == i) result.insert(0, list3[i] + "тысяч ")
                 }
