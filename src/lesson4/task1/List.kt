@@ -4,7 +4,6 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import java.io.File.separator
 import java.nio.file.Files.size
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -250,7 +249,7 @@ fun convert(n: Int, base: Int): List<Int> {
         list.add(num % base)
         num /= base
     } while (num > 0)
-    list.reverse(   )
+    list.reverse()
     return list
 }
 
@@ -274,7 +273,7 @@ fun convertToString(n: Int, base: Int): String {
             if (list[i] > 9) (list[i] - 10 + 'a'.toInt()).toChar().toString() else list[i].toString()
         )
     }
-return result.toString()
+    return result.toString()
 }
 
 /**
@@ -324,7 +323,37 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    val list1 = listOf("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val list2 = listOf("", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val list3 = listOf("", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val list4 = listOf("", "M", "MM", "MMM") //максимальное число в римской системе счисления 3999
+    val result = StringBuilder()
+    var flag = 1 //разряды
+    var k = n
+    while (k > 0) {
+        if (flag == 1)
+            for (i in list1.indices) {
+
+                if (k % 10 == i) result.insert(0, list1[i])
+            }
+        if (flag == 2)
+            for (i in list2.indices) {
+                if (k % 10 == i) result.insert(0, list2[i])
+            }
+        if (flag == 3)
+            for (i in list3.indices) {
+                if (k % 10 == i) result.insert(0, list3[i])
+            }
+        if (flag == 4)
+            for (i in list4.indices) {
+                if (k % 10 == i) result.insert(0, list4[i])
+            }
+        k /= 10
+        flag++
+    }
+    return result.toString()
+}
 
 /**
  * Очень сложная (7 баллов)
@@ -333,4 +362,78 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO() //сделаю в следующих сабмитах
+fun russian(n: Int): String {
+    val list1 = listOf(
+        "", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ", "десять ",
+        "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ", "шестнадцать ", "семнадцать ",
+        "восемнадцать ", "девятнадцать "
+    )
+    val list2 = listOf(
+        "", "", "двадцать ", "тридцать ", "сорок ", "пятьдесят ", "шестьдесят ", "семьдесят ", "восемьдесят ",
+        "девяносто "
+    )
+    val list3 = listOf(
+        "", "сто ", "двести ", "триста ", "четыреста ", "пятьсот ", "шестьсот ", "семьсот ", "восемьсот", "девятьсот "
+    )
+    val list4 = listOf(" ", "тысяча ", "две тысячи ", "три тысячи ", "четыре тысячи ")
+    val result = StringBuilder()
+    var flag = 1 //разряды
+    var k = n
+    val m = n
+    if (k == 0) return "ноль"
+    while (k > 0) {
+        if (flag == 1) {
+            for (i in list1.indices) {
+                if ((k % 10 == i) && (k % 100 !in 10..19)) result.insert(0, list1[i])
+            }
+            if (result.isEmpty())
+                for (i in 11..19)
+                    if (k % 100 == i) {
+                        result.insert(0, list1[i])
+                        k /= 10
+                        flag++
+                    }
+        }
+        if (flag == 2)
+            for (i in list2.indices) {
+                if (k % 10 == i) result.insert(0, list2[i])
+            }
+        if (flag == 3)
+            for (i in list3.indices) {
+                if (k % 10 == i) result.insert(0, list3[i])
+            }
+        if (flag == 4) {
+            if (k % 100 in 11..19) {
+                for (i in 11..19)
+                    if (k % 100 == i) result.insert(0, list1[i] + "тысяч ")
+                k /= 10
+                flag++
+            } else
+                if (k % 10 in 1..4) {
+                    for (i in 1..4)
+                        if (k % 10 == i) result.insert(0, list4[i])
+                } else
+                    if (k % 10 in 5..9)
+                        for (i in 5..9)
+                            if (k % 10 == i) result.insert(0, list1[i] + "тысяч ")
+        }
+        if (flag == 5) {
+            if (m / 1000 % 10 == 0) {
+                for (i in 1..list2.size)
+                    if (k % 10 == i) result.insert(0, list2[i] + "тысяч ")
+            } else
+                for (i in 1..list2.size)
+                    if (k % 10 == i) result.insert(0, list2[i])
+        }
+        if (flag == 6)
+            if (m / 1000 % 10 == 0 && m / 10000 % 10 == 0) {
+                for (i in list3.indices) {
+                    if (k % 10 == i) result.insert(0, list3[i] + "тысяч ")
+                }
+            } else
+                for (i in list3.indices) if (k % 10 == i) result.insert(0, list3[i])
+        k /= 10
+        flag++
+    }
+    return result.toString().trim()
+}
