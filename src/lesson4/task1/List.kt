@@ -380,15 +380,17 @@ fun russian(n: Int): String {
     if (k == 0) return "ноль"
     while (k > 0) {
         if (flag == 1) {
-            for (i in list1.indices) {
-                if ((k % 10 == i) && (k % 100 !in 10..19)) result.insert(0, list1[i])
-            }
-            if (result.isEmpty())
-                for (i in 11..19)
+            if (k % 100 !in 10..19) {
+                for (i in list1.indices) {
+                    if (k % 10 == i) result.insert(0, list1[i])
+                }
+            } else
+                for (i in 10..19)
                     if (k % 100 == i) {
                         result.insert(0, list1[i])
                         k /= 10
                         flag++
+                        if (k % 100 == 11) break
                     }
         }
         if (flag == 2)
@@ -402,10 +404,15 @@ fun russian(n: Int): String {
         if (flag == 4) {
             when {
                 k % 100 in 11..19 -> {
-                    for (i in 11..19)
+                    for (i in 10..19)
                         if (k % 100 == i) result.insert(0, list1[i] + "тысяч ")
                     k /= 10
                     flag++
+                }
+                k % 100 == 10 -> {
+                    result.insert(0, list1[10] + "тысяч ")
+                    k /= 10
+                    flag += 2
                 }
                 k % 10 in 1..4 -> {
                     for (i in 1..4)
