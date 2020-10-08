@@ -400,19 +400,20 @@ fun russian(n: Int): String {
                 if (k % 10 == i) result.insert(0, list3[i])
             }
         if (flag == 4) {
-            if (k % 100 in 11..19) {
-                for (i in 11..19)
-                    if (k % 100 == i) result.insert(0, list1[i] + "тысяч ")
-                k /= 10
-                flag++
-            } else
-                if (k % 10 in 1..4) {
+            when {
+                k % 100 in 11..19 -> {
+                    for (i in 11..19)
+                        if (k % 100 == i) result.insert(0, list1[i] + "тысяч ")
+                    k /= 10
+                    flag++
+                }
+                k % 10 in 1..4 -> {
                     for (i in 1..4)
                         if (k % 10 == i) result.insert(0, list4[i])
-                } else
-                    if (k % 10 in 5..9)
-                        for (i in 5..9)
-                            if (k % 10 == i) result.insert(0, list1[i] + "тысяч ")
+                }
+                k % 10 in 5..9 -> for (i in 5..9)
+                    if (k % 10 == i) result.insert(0, list1[i] + "тысяч ")
+            }
         }
         if (flag == 5) {
             if (n / 1000 % 10 == 0) {
