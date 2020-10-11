@@ -4,6 +4,7 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
+import lesson7.task1.deleteMarked
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -135,7 +136,7 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double {
     var res = 0.0
     for (element in list) res += element
-    return if (list.isEmpty()) res // тут надо юзать if, т.к при пустом списке list.size == 0
+    return if (list.isEmpty()) res
     else res / list.size
 }
 
@@ -150,8 +151,7 @@ fun mean(list: List<Double>): Double {
 
 fun center(list: MutableList<Double>): MutableList<Double> {
     val mean = mean(list)
-    if (list.isEmpty()) return list else
-        for (i in list.indices) list[i] -= mean
+    for (i in list.indices) list[i] -= mean
     return list
 }
 
@@ -362,83 +362,79 @@ fun roman(n: Int): String {
  */
 fun russian(n: Int): String {
     val list1 = listOf(
-        "", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ", "десять ",
-        "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ", "шестнадцать ", "семнадцать ",
-        "восемнадцать ", "девятнадцать "
+        "", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять",
+        "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать",
+        "восемнадцать", "девятнадцать"
     )
     val list2 = listOf(
-        "", "", "двадцать ", "тридцать ", "сорок ", "пятьдесят ", "шестьдесят ", "семьдесят ", "восемьдесят ",
-        "девяносто "
+        "", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят",
+        "девяносто"
     )
     val list3 = listOf(
-        "", "сто ", "двести ", "триста ", "четыреста ", "пятьсот ", "шестьсот ", "семьсот ", "восемьсот", "девятьсот "
+        "", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
     )
-    val list4 = listOf(" ", "тысяча ", "две тысячи ", "три тысячи ", "четыре тысячи ")
-    val result = StringBuilder()
+    val result = mutableListOf<Any>()
     var flag = 1 //разряды
     var k = n
     if (k == 0) return "ноль"
     while (k > 0) {
-        if (flag == 1) {
+        if (flag == 1) {                                                            // 1 разряд
             if (k % 100 !in 10..19) {
-                for (i in list1.indices) {
-                    if (k % 10 == i) result.insert(0, list1[i])
+                for (i in 1..9) if (k % 10 == i) result.add(0, list1[i])
+            } else
+                for (i in 10..19)
+                    if (k % 100 == i) {
+                        result.add(0, list1[i])
+                        k /= 10
+                        flag++
+                        if (k % 100 == 11) break // чтобы не пошел дальше по циклу, если число выглядит так: ***11?
+                    }
+        }
+        if (flag == 2) {                                                           // 2 разряд
+            for (i in 2..9)
+                if (k % 10 == i) result.add(0, list2[i])
+        }
+        if (flag == 3) {                                                           // 3 разряд
+            for (i in 1..9)
+                if (k % 10 == i) result.add(0, list3[i])
+        }
+        if (flag == 4) {                                                           // 4 разряд
+            if (k % 100 !in 10..19) {
+                for (i in 1..9) if (k % 10 == i) {
+                    when (i) {
+                        1 -> result.add(0, "одна тысяча")
+                        2 -> result.add(0, "две тысячи")
+                        in 3..4 -> result.add(0, list1[i] + " тысячи")
+                    }
+                    if (i in 5..9) result.add(0, list1[i] + " тысяч")
                 }
             } else
                 for (i in 10..19)
                     if (k % 100 == i) {
-                        result.insert(0, list1[i])
+                        result.add(0, list1[i] + " тысяч")
                         k /= 10
                         flag++
-                        if (k % 100 == 11) break
+                        if (k % 100 == 11) break // аналогичная ситуация, что и с первым разрядом
                     }
         }
-        if (flag == 2)
-            for (i in list2.indices) {
-                if (k % 10 == i) result.insert(0, list2[i])
-            }
-        if (flag == 3)
-            for (i in list3.indices) {
-                if (k % 10 == i) result.insert(0, list3[i])
-            }
-        if (flag == 4) {
-            when {
-                k % 100 in 11..19 -> {
-                    for (i in 10..19)
-                        if (k % 100 == i) result.insert(0, list1[i] + "тысяч ")
-                    k /= 10
-                    flag++
+        if (flag == 5) {                                                            // 5 разряд
+            for (i in 2..9)
+                if (k % 10 == i) {
+                    if (n / 1000 % 10 == 0) // рассматриваем вариант, когда число выглядит так: ?0???
+                        result.add(0, list2[i] + " тысяч")
+                    else result.add(0, list2[i])
                 }
-                k % 100 == 10 -> {
-                    result.insert(0, list1[10] + "тысяч ")
-                    k /= 10
-                    flag += 2
-                }
-                k % 10 in 1..4 -> {
-                    for (i in 1..4)
-                        if (k % 10 == i) result.insert(0, list4[i])
-                }
-                k % 10 in 5..9 -> for (i in 5..9)
-                    if (k % 10 == i) result.insert(0, list1[i] + "тысяч ")
-            }
         }
-        if (flag == 5) {
-            if (n / 1000 % 10 == 0) {
-                for (i in 1..list2.size)
-                    if (k % 10 == i) result.insert(0, list2[i] + "тысяч ")
-            } else
-                for (i in 1..list2.size)
-                    if (k % 10 == i) result.insert(0, list2[i])
-        }
-        if (flag == 6)
-            if (n / 1000 % 10 == 0 && n / 10000 % 10 == 0) {
-                for (i in list3.indices) {
-                    if (k % 10 == i) result.insert(0, list3[i] + "тысяч ")
+        if (flag == 6) {                                                            // 6 разряд
+            for (i in 1..9)
+                if (k % 10 == i) {
+                    if (n / 1000 % 10 == 0 && n / 10000 % 10 == 0) // рассматриваем вариант, когда число выглядит так: ?00???
+                        result.add(0, list3[i] + " тысяч")
+                    else result.add(0, list3[i])
                 }
-            } else
-                for (i in list3.indices) if (k % 10 == i) result.insert(0, list3[i])
+        }
         k /= 10
         flag++
     }
-    return result.toString().trim()
+    return result.joinToString(separator = " ")
 }
