@@ -378,7 +378,7 @@ fun russian(n: Int): String {
     while (k > 0) {
         if (flag == 1) {
             if (k % 100 !in 10..19 && k % 10 != 0) result.add(0, list1[k % 10])
-            else if (k % 100 != 0) {
+            else if (k % 100 != 0 && k % 100 in 10..19) {
                 result.add(0, list1[k % 100])
                 k /= 10
                 flag++
