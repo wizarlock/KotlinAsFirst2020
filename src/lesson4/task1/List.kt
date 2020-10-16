@@ -177,8 +177,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun polynom(p: List<Int>, x: Int): Int {
-    var res = 0
-    if (p.isNotEmpty()) res = p.last()
+    var res = p.lastOrNull() ?: 0
     for (i in p.size - 2 downTo 0) res = p[i] + x * res
     return res
 }
@@ -195,11 +194,10 @@ fun polynom(p: List<Int>, x: Int): Int {
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
     var res = 0
-    if (list.isEmpty()) return list else
-        for (i in list.indices) {
-            res += list[i]
-            list[i] = res
-        }
+    for (i in list.indices) {
+        res += list[i]
+        list[i] = res
+    }
     return list
 }
 
@@ -374,67 +372,46 @@ fun russian(n: Int): String {
         "", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
     )
     val result = mutableListOf<Any>()
-    var flag = 1 //разряды
+    var flag = 1
     var k = n
     if (k == 0) return "ноль"
     while (k > 0) {
-        if (flag == 1) {                                                            // 1 разряд
+        if (flag == 1) {
+            if (k % 100 !in 10..19 && k % 10 != 0) result.add(0, list1[k % 10])
+            else if (k % 100 != 0) {
+                result.add(0, list1[k % 100])
+                k /= 10
+                flag++
+            }
+        }
+        if (flag == 2) if (k % 10 != 1 && k % 10 != 0) result.add(0, list2[k % 10])
+        if (flag == 3) if (k % 10 != 0) result.add(0, list3[k % 10])
+        if (flag == 4) {
             if (k % 100 !in 10..19) {
-                for (i in 1..9) if (k % 10 == i) result.add(0, list1[i])
-            } else
-                for (i in 10..19)
-                    if (k % 100 == i) {
-                        result.add(0, list1[i])
-                        k /= 10
-                        flag++
-                        if (k % 100 == 11) break // чтобы не пошел дальше по циклу, если число выглядит так: ***11?
-                    }
-        }
-        if (flag == 2) {                                                           // 2 разряд
-            for (i in 2..9)
-                if (k % 10 == i) result.add(0, list2[i])
-        }
-        if (flag == 3) {                                                           // 3 разряд
-            for (i in 1..9)
-                if (k % 10 == i) result.add(0, list3[i])
-        }
-        if (flag == 4) {                                                           // 4 разряд
-            if (k % 100 !in 10..19) {
-                for (i in 1..9) if (k % 10 == i) {
-                    when (i) {
-                        1 -> result.add(0, "одна тысяча")
-                        2 -> result.add(0, "две тысячи")
-                        in 3..4 -> result.add(0, list1[i] + " тысячи")
-                    }
-                    if (i in 5..9) result.add(0, list1[i] + " тысяч")
+                when (k % 10) {
+                    1 -> result.add(0, "одна тысяча")
+                    2 -> result.add(0, "две тысячи")
+                    in 3..4 -> result.add(0, list1[k % 10] + " тысячи")
                 }
-            } else
-                for (i in 10..19)
-                    if (k % 100 == i) {
-                        result.add(0, list1[i] + " тысяч")
-                        k /= 10
-                        flag++
-                        if (k % 100 == 11) break // аналогичная ситуация, что и с первым разрядом
-                    }
+                if (k % 10 in 5..9) result.add(0, list1[k % 10] + " тысяч")
+            } else {
+                result.add(0, list1[k % 100] + " тысяч")
+                k /= 10
+                flag++
+            }
         }
-        if (flag == 5) {                                                            // 5 разряд
-            for (i in 2..9)
-                if (k % 10 == i) {
-                    if (n / 1000 % 10 == 0) // рассматриваем вариант, когда число выглядит так: ?0???
-                        result.add(0, list2[i] + " тысяч")
-                    else result.add(0, list2[i])
-                }
+        if (flag == 5) if (k % 10 != 1 && k % 10 != 0) {
+            if (n / 1000 % 10 == 0)
+                result.add(0, list2[k % 10] + " тысяч")
+            else result.add(0, list2[k % 10])
         }
-        if (flag == 6) {                                                            // 6 разряд
-            for (i in 1..9)
-                if (k % 10 == i) {
-                    if (n / 1000 % 10 == 0 && n / 10000 % 10 == 0) // рассматриваем вариант, когда число выглядит так: ?00???
-                        result.add(0, list3[i] + " тысяч")
-                    else result.add(0, list3[i])
-                }
+        if (flag == 6) {
+            if (n / 1000 % 10 == 0 && n / 10000 % 10 == 0)
+                result.add(0, list3[k % 10] + " тысяч")
+            else result.add(0, list3[k % 10])
         }
         k /= 10
         flag++
     }
-    return result.joinToString(separator = " ")
+return result.joinToString(separator = " ")
 }
