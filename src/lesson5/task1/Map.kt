@@ -2,6 +2,7 @@
 
 package lesson5.task1
 
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -194,16 +195,12 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
     val stocks = mutableMapOf<String, Double>()
     val counter = mutableMapOf<String, Int>()
     for ((name, price) in stockPrices) {
-        if (stocks[name] == null) {
-            stocks[name] = price
-            counter[name] = 1
-        } else {
-            stocks[name] = stocks[name]!! + price
-            counter[name] = counter[name]!! + 1
-        }
+        stocks[name] = (stocks[name] ?: 0.0) + price
+        counter[name] = (counter[name] ?: 0) + 1
     }
-    for (name in stocks.keys)
-        stocks[name] = stocks[name]!! / counter[name]!!
+    for ((name, price) in stocks) {
+        stocks[name] = price / counter[name]!!
+    }
     return stocks
 }
 
@@ -230,11 +227,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
             if (min == null) {
                 nameOfItem = name
                 min = price.second
-            } else {
-                if (price.second < min) {
-                    min = price.second
-                    nameOfItem = name
-                }
+            } else if (price.second < min) {
+                min = price.second
+                nameOfItem = name
             }
         }
     }
@@ -251,12 +246,10 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val char = mutableSetOf<Char>()
-    for (i in chars) char.add(i.toLowerCase())
-    for (i in word.toLowerCase().toSet()) {
-        if (i !in char) return false
-    }
-    return true
+    val charsSet = mutableSetOf<Char>()
+    for (i in chars.toMutableSet()) charsSet.add(i.toLowerCase())
+    if (charsSet.containsAll(word.toLowerCase().toSet())) return true
+    return false
 }
 
 
@@ -274,11 +267,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val counter = mutableMapOf<String, Int>()
-    for (i in list.indices) {
-        if (counter[list[i]] == null)
-            counter[list[i]] = 1
-        else counter[list[i]] = counter[list[i]]!! + 1
-    }
+    for (i in list.indices) counter[list[i]] = (counter[list[i]] ?: 0) + 1
     return counter.filter { it.value > 1 }
 }
 
@@ -297,7 +286,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
 fun hasAnagrams(words: List<String>): Boolean {
     for (i in words.indices) {
         for (m in i + 1 until words.size)
-            if (words[i].length == words[m].length && words[i].toSet() == words[m].toSet())
+            if (words[i].length == words[m].length && words[i].toList().sorted() == words[m].toList().sorted())
                 return true
     }
     return false
@@ -338,6 +327,24 @@ fun hasAnagrams(words: List<String>): Boolean {
  *        )
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+// В РАЗРАБОТКЕ (ЧТО-ТО СЛОЖНО)
+//    val handshakes = friends.toMutableMap()
+//    val save = mutableSetOf<String>()
+//    var flag = false
+//    while (!flag) {
+//        flag = true
+//        for (human in friends.keys)
+//            for (friendsName in friends[human] ?: error("")) {
+//                if (friendsName in friends.keys)
+//                    handshakes[human] = handshakes[human]!! + handshakes[friendsName]!!
+//                if (friendsName !in friends.values && friendsName !in friends.keys) {
+//                    save.add(friendsName)
+//                    flag = false
+//                }
+//            }
+//    }
+//    return handshakes
+//}
 
 /**
  * Сложная (6 баллов)
@@ -357,15 +364,15 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    var k = -1
-    var l = -1
-    for (i in list.indices)
-        for (m in i + 1 until list.size)
-            if (list[i] + list[m] == number) {
-                k = i
-                l = m
-            }
-    return Pair(k, l)
+    val map = mutableMapOf<Int, Int>()
+    for ((i, digit) in list.withIndex()) map[digit] = i
+    for ((i, digit) in list.withIndex()) {
+        if (map[number - digit] != null) {
+            if (map[number - digit]!! > i) return Pair(i, map[number - digit]!!)
+            else if (map[number - digit]!! < i) return Pair(map[number - digit]!!, i)
+        }
+    }
+    return Pair(-1, -1)
 }
 
 /**
@@ -390,3 +397,4 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+
