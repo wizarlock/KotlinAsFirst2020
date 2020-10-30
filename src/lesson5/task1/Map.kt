@@ -17,7 +17,7 @@ package lesson5.task1
  */
 fun shoppingListCost(
     shoppingList: List<String>,
-    costs: Map<String, Double>
+    costs: Map<String, Double>,
 ): Double {
     var totalCost = 0.0
 
@@ -39,7 +39,7 @@ fun shoppingListCost(
  */
 fun filterByCountryCode(
     phoneBook: MutableMap<String, String>,
-    countryCode: String
+    countryCode: String,
 ) {
     val namesToRemove = mutableListOf<String>()
 
@@ -62,7 +62,7 @@ fun filterByCountryCode(
  */
 fun removeFillerWords(
     text: List<String>,
-    vararg fillerWords: String
+    vararg fillerWords: String,
 ): List<String> {
     val fillerWordSet = setOf(*fillerWords)
 
@@ -245,13 +245,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val charsSet = mutableSetOf<Char>()
-    for (i in chars.toMutableSet()) charsSet.add(i.toLowerCase())
-    if (charsSet.containsAll(word.toLowerCase().toSet())) return true
-    return false
-}
-
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+    chars.map { it.toLowerCase() }.containsAll(word.toLowerCase().toSet())
 
 /**
  * Средняя (4 балла)
@@ -284,14 +279,13 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    for (i in words.indices) {
-        for (m in i + 1 until words.size)
-            if (words[i].length == words[m].length && words[i].toList().sorted() == words[m].toList().sorted())
-                return true
+    val set = words.toMutableSet()
+    for (element in words) {
+        set.remove(element)
+        if (set.map { it.toList().sorted() }.contains(element.toList().sorted())) return true
     }
-    return false
+return false
 }
-
 /**
  * Сложная (5 баллов)
  *
@@ -327,24 +321,6 @@ fun hasAnagrams(words: List<String>): Boolean {
  *        )
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
-// В РАЗРАБОТКЕ (ЧТО-ТО СЛОЖНО)
-//    val handshakes = friends.toMutableMap()
-//    val save = mutableSetOf<String>()
-//    var flag = false
-//    while (!flag) {
-//        flag = true
-//        for (human in friends.keys)
-//            for (friendsName in friends[human] ?: error("")) {
-//                if (friendsName in friends.keys)
-//                    handshakes[human] = handshakes[human]!! + handshakes[friendsName]!!
-//                if (friendsName !in friends.values && friendsName !in friends.keys) {
-//                    save.add(friendsName)
-//                    flag = false
-//                }
-//            }
-//    }
-//    return handshakes
-//}
 
 /**
  * Сложная (6 баллов)
@@ -365,9 +341,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val map = mutableMapOf<Int, Int>()
-    for ((i, digit) in list.withIndex()) map[digit] = i
     for ((i, digit) in list.withIndex()) {
-        if (map[number - digit] != null) {
+        if (map[number - digit] == null) map[digit] = i
+        else {
             if (map[number - digit]!! > i) return Pair(i, map[number - digit]!!)
             else if (map[number - digit]!! < i) return Pair(map[number - digit]!!, i)
         }
