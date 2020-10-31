@@ -233,6 +233,7 @@ fun plusMinus(expression: String): Int {
         return result
     } else throw IllegalArgumentException()
 }
+
 /**
  * Сложная (6 баллов)
  *
@@ -242,7 +243,16 @@ fun plusMinus(expression: String): Int {
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    var k = 0
+    val words = str.split(" ")
+    for (i in 0 until words.size - 1) {
+        if (words[i].toLowerCase() == words[i + 1].toLowerCase()) return k
+        k += words[i].length + 1
+    }
+    k = -1
+    return k
+}
 
 /**
  * Сложная (6 баллов)
@@ -306,4 +316,51 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val list = listOf(
+        '+', '-', '>', '<', '[', ']', ' '
+    )
+    val digit = mutableListOf<Int>()
+    var counter = 0
+    var pointer = cells / 2
+    var restartCycle: Int
+    var cycle: Int
+    for (i in commands) if (i !in list) throw IllegalArgumentException()
+
+    for (i in 0 until cells) digit.add(0)
+    while (counter <= limit && counter <= commands.length - 1) {
+        when (commands[counter]) {
+            '+' -> digit[pointer]++
+            '-' -> digit[pointer]--
+            '>' -> pointer++
+            '<' -> pointer--
+            '[' -> if (digit[pointer] != 0) {
+                counter++
+                restartCycle = counter
+                cycle = 0
+                while (digit[pointer] != 0) {
+                    restartCycle -= cycle
+                    counter -= cycle
+                    cycle = 0
+                    while (commands[restartCycle] != ']') {
+                        when (commands[restartCycle]) {
+                            '+' -> digit[pointer]++
+                            '-' -> digit[pointer]--
+                            '>' -> pointer++
+                            '<' -> pointer--
+                        }
+                        cycle++
+                        restartCycle++
+                        counter++
+                    }
+                }
+            } else {
+                counter++
+                while (commands[counter] != ']') counter++
+            }
+        }
+        counter++
+    }
+    return digit
+}
+
