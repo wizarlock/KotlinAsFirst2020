@@ -84,8 +84,20 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
-
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val result = mutableMapOf<String, Int>()
+    for (str in substrings)
+        result[str] = 0
+    for (line in File(inputName).readLines())
+        for (str in result.keys) {
+            var index = line.toLowerCase().indexOf(str.toLowerCase())
+            while (index != -1) {
+                result[str] = result[str]!! + 1
+                index = line.toLowerCase().indexOf(str.toLowerCase(), index + 1)
+            }
+        }
+    return result
+}
 
 /**
  * Средняя (12 баллов)
