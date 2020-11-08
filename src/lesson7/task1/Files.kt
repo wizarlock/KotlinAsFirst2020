@@ -113,7 +113,25 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val correctly = mapOf(
+        'ы' to 'и',
+        'Ы' to 'И',
+        'я' to 'а',
+        'Я' to 'А',
+        'ю' to 'у',
+        'Ю' to 'У',
+    )
+    val possibleMistake = listOf('ж', 'ч', 'ш', 'щ', 'Ж', 'Ч', 'Ш', 'Щ')
+    for (line in File(inputName).readLines()) {
+        val correctLine = StringBuilder(line)
+        for (index in 0..correctLine.length - 2)
+            if (possibleMistake.contains(correctLine[index]) && correctLine[index + 1] in correctly)
+                correctLine[index + 1] = correctly[correctLine[index + 1]] ?: error("")
+        writer.write(correctLine.toString())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -134,7 +152,18 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    var mainLine = ""
+    for (line in File(inputName).readLines())
+        if (line.length > mainLine.length)
+            mainLine = line
+    for (line in File(inputName).readLines()) {
+        val correctLine = StringBuilder(line.trim())
+        repeat((mainLine.length - correctLine.length) / 2) { correctLine.insert(0, " ") }
+        writer.write(correctLine.toString())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
