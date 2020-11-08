@@ -155,7 +155,7 @@ fun centerFile(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var mainLine = ""
     for (line in File(inputName).readLines())
-        if (line.length > mainLine.length)
+        if (line.trim().length > mainLine.length)
             mainLine = line
     for (line in File(inputName).readLines()) {
         val correctLine = StringBuilder(line.trim())
