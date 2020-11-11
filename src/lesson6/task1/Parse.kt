@@ -92,14 +92,12 @@ fun dateStrToDigit(str: String): String {
         "ноября" to 11,
         "декабря" to 12,
     )
-    if (parts.size != 3) return ""
-    if (parts[1] !in months) return ""
-    if (parts[0].toIntOrNull() == null && parts[0].toIntOrNull() == 0) return ""
-    if (parts[2].toIntOrNull() == null && parts[2].toIntOrNull() == 0) return ""
-    if (daysInMonth(months[parts[1]] ?: error(""), parts[2].toInt()) < parts[0].toInt()) return ""
-    return String.format("%02d.%02d.%d", parts[0].toInt(), months[parts[1]], parts[2].toInt())
+    if (parts.size != 3 || parts[1] !in months) return ""
+    val day = parts[0].toIntOrNull() ?: return ""
+    val year = parts[2].toIntOrNull() ?: return ""
+    if (daysInMonth(months[parts[1]] ?: return "", year) < day) return ""
+    return String.format("%02d.%02d.%d", day, months[parts[1]], year)
 }
-
 
 /**
  * Средняя (4 балла)
@@ -127,12 +125,11 @@ fun dateDigitToStr(digital: String): String {
         11 to "ноября",
         12 to "декабря",
     )
-    if (parts.size != 3) return ""
-    if (parts[1].toIntOrNull() !in months) return ""
-    if (parts[0].toIntOrNull() == null && parts[0].toIntOrNull() == 0) return ""
-    if (parts[2].toIntOrNull() == null && parts[2].toIntOrNull() == 0) return ""
-    if (daysInMonth(parts[1].toInt(), parts[2].toInt()) < parts[0].toInt()) return ""
-    return "${parts[0].toInt()} ${months[parts[1].toIntOrNull()]} ${parts[2].toInt()}"
+    if (parts.size != 3 || parts[1].toIntOrNull() !in months) return ""
+    val day = parts[0].toIntOrNull() ?: return ""
+    val year = parts[2].toIntOrNull() ?: return ""
+    if (daysInMonth(parts[1].toInt(), year) < day) return ""
+    return "$day ${months[parts[1].toIntOrNull()]} $year"
 }
 
 /**
@@ -169,11 +166,7 @@ fun bestLongJump(jumps: String): Int {
     var max = -1
     for (i in jumps) if (i !in list) return max       //проверка на нарушение формата входной строки другими символами
     if (Regex("""\d""").find(jumps, 0) != null) {     //проверка на присутствие в строке чисел
-        var clearedJump = jumps.replace("%", "").replace("-", "")
-        while (clearedJump.contains("  ")) {
-            clearedJump = clearedJump.replace("  ", " ")
-        }
-        val splitJumps = clearedJump.split(" ")
+        val splitJumps = jumps.replace("%", "").replace("-", "").split(Regex("""\s+"""))
         for (part in splitJumps) if (part.toInt() > max) max = part.toInt()
     }
     return max
@@ -216,20 +209,14 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    val list = listOf(
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '-', '+'
-    )
     val splitExpression = expression.split(" ")
     var result: Int
-    for (i in expression) if (i !in list) throw IllegalArgumentException()
-    if (Regex("""\d""").find(expression, 0) == null) throw IllegalArgumentException()
     if (expression.matches(Regex("""\d+(\s[+\-]\s\d+)*"""))) {
         result = splitExpression[0].toInt()
-        if (splitExpression.size > 1)
-            for (i in 1 until splitExpression.size) {
-                if (splitExpression[i] == "+") result += splitExpression[i + 1].toInt()
-                if (splitExpression[i] == "-") result -= splitExpression[i + 1].toInt()
-            }
+        for (i in 1 until splitExpression.size) {
+            if (splitExpression[i] == "+") result += splitExpression[i + 1].toInt()
+            if (splitExpression[i] == "-") result -= splitExpression[i + 1].toInt()
+        }
         return result
     } else throw IllegalArgumentException()
 }
@@ -245,9 +232,9 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     var k = 0
-    val words = str.split(" ")
+    val words = str.toLowerCase().split(" ")
     for (i in 0 until words.size - 1) {
-        if (words[i].toLowerCase() == words[i + 1].toLowerCase()) return k
+        if (words[i] == words[i + 1]) return k
         k += words[i].length + 1
     }
     k = -1
