@@ -197,7 +197,36 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val lines = File(inputName).readLines()
+    var mainLine = ""
+    val correctLines = mutableListOf<String>()
+
+    for (i in lines) {                          // формируем новый список из правильных строк
+        var lineWithoutExtraSpaces = i.trim()
+        while (lineWithoutExtraSpaces.contains("  "))
+            lineWithoutExtraSpaces = lineWithoutExtraSpaces.replace("  ", " ")
+        correctLines.add(lineWithoutExtraSpaces)
+    }
+    for (i in correctLines)                     // находим самую длинную строку
+        if (i.length > mainLine.length)
+            mainLine = i
+
+    for (i in correctLines) { // а теперь делаем выравнивание
+        var counter = i.length
+        val wordList = i.split(" ").toMutableList()
+        if (wordList.size > 1)
+            while (counter != mainLine.length) {
+                for (index in 1 until wordList.size) {
+                    wordList[index] = " " + wordList[index]
+                    counter++
+                    if (counter == mainLine.length) break
+                }
+            }
+        writer.write(wordList.joinToString(separator = " "))
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
