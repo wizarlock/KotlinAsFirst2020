@@ -366,7 +366,8 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
-fun markdownToHtmlSimple(inputName: String, outputName: String) { TODO()
+fun markdownToHtmlSimple(inputName: String, outputName: String) {
+    TODO()
 //   val stack = ArrayDeque<String>()
 //    val writer = File(outputName).bufferedWriter()
 //    val lines = File(inputName).readLines()
@@ -649,14 +650,15 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                 }
                 writer.newLine()
 
-                    // запись процесса вычитания
+                // запись процесса вычитания
 
                 if (resAfterMinusInt < rhv) {
                     while ("$forSpace1".length + 2 != sum) forSpace1.append(" ")
                     writer.write("$forSpace1-0")
                     writer.newLine()
                     writer.write("$forSpace")
-                    repeat(digitNumber(resAfterMinusInt)) { writer.write("-") }
+                    if (!marker) repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
+                    else repeat(digitNumber(resAfterMinusInt)) { writer.write("-") }
                 } else {
                     minus = rhv * (resAfterMinusInt / rhv)
                     while ("$forSpace1$minus".length + 1 != sum) forSpace1.append(" ")
@@ -665,7 +667,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.write("$forSpace1")
                     repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
                 }
-                if (resAfterMinusInt - minus == 0 && flag != quantityLhv - 1) sum = "$forSpace".length + digitNumber(resAfterMinusInt) + 1
+                if (resAfterMinusInt - minus == 0 && flag != quantityLhv - 1) sum =
+                    "$forSpace".length + digitNumber(resAfterMinusInt) + 1
                 else {
                     if (!marker) {
                         sum = "$forSpace".length + digitNumber(resAfterMinusInt) + 1
