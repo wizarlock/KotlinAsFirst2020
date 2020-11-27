@@ -2,7 +2,10 @@
 
 package lesson7.task1
 
+import lesson3.task1.digitNumber
 import java.io.File
+import java.util.*
+import kotlin.math.pow
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -363,8 +366,29 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
-fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+fun markdownToHtmlSimple(inputName: String, outputName: String) { TODO()
+//   val stack = ArrayDeque<String>()
+//    val writer = File(outputName).bufferedWriter()
+//    val lines = File(inputName).readLines()
+//    writer.write("<html><body>")
+//    if (lines.isNotEmpty()) writer.write("<p>")
+//    for (line in lines) {
+//        var newLine = line
+//        if (newLine.isEmpty()) {
+//            writer.write("</p>")
+//            writer.write("<p>")
+//        } else {
+//            var index1 = line.indexOf("~~")
+//            var index2 = line.indexOf("~~")
+//            if (index1 != -1 && index2 != -1) {
+//                writer.write(line.substring(0, index1))
+//                writer.write("<s>")
+//            }
+//        }
+//    }
+//    if (lines.isNotEmpty()) writer.write("</p>")
+//    writer.write("/body></html>")
+//    writer.close()
 }
 
 /**
@@ -531,6 +555,131 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
-}
+    val writer = File(outputName).bufferedWriter()
+    val forSpace1 = StringBuilder()
+    val forSpace = StringBuilder()
+    val result = lhv / rhv
+    val quantityLhv = digitNumber(lhv)
+    val quantityRhv = digitNumber(rhv)
+    var marker = true
 
+    // деление в столбик для результата 0
+
+    if (result == 0) {
+        if (quantityLhv > 1) {
+            writer.write("$lhv | $rhv")
+            while ("$forSpace".length + 2 != quantityLhv) forSpace.append(" ")
+        } else {
+            writer.write(" $lhv | $rhv")
+            while ("$forSpace".length + 1 != quantityLhv) forSpace.append(" ")
+        }
+        writer.newLine()
+        writer.write("$forSpace")
+        writer.write("-0")
+        repeat(3) { writer.write(" ") }
+        writer.write("$result")
+        writer.newLine()
+        repeat("$forSpace".length + 2) { writer.write("-") }
+        writer.newLine()
+        forSpace.setLength(0)
+        if (quantityLhv > 1) writer.write("$lhv")
+        else writer.write(" $lhv")
+    } else {
+
+        // деление в столбик для результата не 0, строка до -------
+
+        val coefficient: Double
+        val resMinus: Double
+        if (lhv / 10.0.pow(quantityLhv - quantityRhv) >= rhv) {
+            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv) * rhv)
+            resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv)) - rhv * coefficient.toInt()
+        } else {
+            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
+            resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - rhv * coefficient.toInt()
+        }
+
+        var resAfterMinusInt = resMinus.toInt()
+        if (digitNumber(resAfterMinusInt) + 1 == quantityLhv) writer.write("$lhv | $rhv")
+        else writer.write(" $lhv | $rhv")
+        writer.newLine()
+        var minus = rhv * coefficient.toInt()
+        writer.write("-$minus")
+        val quantityMinus = digitNumber(minus)
+        if (digitNumber(resAfterMinusInt) + 1 == quantityLhv) repeat(quantityLhv - quantityMinus + 2) { writer.write(" ") }
+        else repeat(quantityLhv - quantityMinus + 3) { writer.write(" ") }
+        writer.write("$result")
+        writer.newLine()
+        repeat(quantityMinus + 1) { writer.write("-") }
+        writer.newLine()
+        var sum = quantityMinus + 1
+        var flag = quantityMinus
+        if (digitNumber(resAfterMinusInt) + 1 == quantityLhv) flag++
+        forSpace.setLength(0)
+        while (flag <= quantityLhv) {
+
+            // деление в столбик для результата не 0, остальные строки
+
+            minus = 0
+            var digit = lhv
+            repeat(quantityLhv - flag - 1) { digit /= 10 }
+            digit %= 10
+
+            // для последнего символа
+
+            if (flag == quantityLhv) {
+                while ("$forSpace$resAfterMinusInt".length != sum) forSpace.append(" ")
+                writer.write("$forSpace")
+                writer.write("$resAfterMinusInt")
+            } else {
+
+                // запись результата вычитания
+
+                if (resAfterMinusInt == 0) {
+                    while ("$forSpace$resAfterMinusInt".length != sum) forSpace.append(" ")
+                    writer.write("$forSpace")
+                    writer.write("0$digit")
+                    resAfterMinusInt = digit
+                    sum = "$forSpace$resAfterMinusInt".length + 1
+                    marker = false
+                } else {
+                    resAfterMinusInt = resAfterMinusInt * 10 + digit
+                    while ("$forSpace$resAfterMinusInt".length != sum + 1) forSpace.append(" ")
+                    writer.write("$forSpace$resAfterMinusInt")
+                    sum = "$forSpace$resAfterMinusInt".length
+                }
+                writer.newLine()
+
+                    // запись процесса вычитания
+
+                if (resAfterMinusInt < rhv) {
+                    while ("$forSpace1".length + 2 != sum) forSpace1.append(" ")
+                    writer.write("$forSpace1-0")
+                    writer.newLine()
+                    writer.write("$forSpace")
+                    repeat(digitNumber(resAfterMinusInt)) { writer.write("-") }
+                } else {
+                    minus = rhv * (resAfterMinusInt / rhv)
+                    while ("$forSpace1$minus".length + 1 != sum) forSpace1.append(" ")
+                    writer.write("$forSpace1-$minus")
+                    writer.newLine()
+                    writer.write("$forSpace1")
+                    repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
+                }
+                if (resAfterMinusInt - minus == 0 && flag != quantityLhv - 1) sum = "$forSpace".length + digitNumber(resAfterMinusInt) + 1
+                else {
+                    if (!marker) {
+                        sum = "$forSpace".length + digitNumber(resAfterMinusInt) + 1
+                        marker = true
+                    } else sum = "$forSpace".length + digitNumber(resAfterMinusInt)
+
+                }
+            }
+            resAfterMinusInt -= minus
+            forSpace.setLength(0)
+            forSpace1.setLength(0)
+            flag++
+            writer.newLine()
+        }
+    }
+    writer.close()
+}
