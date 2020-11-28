@@ -560,14 +560,20 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val forSpace1 = StringBuilder()
     val forSpace = StringBuilder()
     val result = lhv / rhv
-    val quantityLhv = digitNumber(lhv)
-    val quantityRhv = digitNumber(rhv)
+    val quantityLhv = "$lhv".length
+    val quantityRhv = "$rhv".length
     var marker = true
     var coefficient: Double
-    val resMinus: Double
+    var resMinus: Double
     var resAfterMinusInt: Int
     var minus: Int
 
+    //для результата 0 и для случая, представленного ниже
+
+    coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
+    minus = rhv * coefficient.toInt()
+    resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - rhv * coefficient.toInt()
+    resAfterMinusInt = resMinus.toInt()
 
     if (result == 0 || (lhv / 10.0.pow(quantityLhv - quantityRhv) < rhv && quantityRhv + 1 == quantityLhv)) {
         if (result == 0) {
@@ -580,17 +586,11 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         } else {
             writer.write("$lhv | $rhv")
-            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
-            minus = rhv * coefficient.toInt()
             while ("$forSpace$minus".length + 1 != quantityLhv) forSpace.append(" ")
         }
         writer.newLine()
         if (result == 0) writer.write("$forSpace-0")
-        else {
-            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
-            minus = rhv * coefficient.toInt()
-            writer.write("$forSpace-$minus")
-        }
+        else writer.write("$forSpace-$minus")
         repeat(3) { writer.write(" ") }
         writer.write("$result")
         writer.newLine()
@@ -602,13 +602,11 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             if (quantityLhv > 1) writer.write("$lhv")
             else writer.write(" $lhv")
         else {
-            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
-            resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - rhv * coefficient.toInt()
-            resAfterMinusInt = resMinus.toInt()
             while ("$forSpace$resAfterMinusInt".length != quantityLhv) forSpace.append(" ")
             writer.write("$forSpace$resAfterMinusInt")
         }
 
+        //для результата не 0
 
     } else {
         forSpace.setLength(0)
@@ -624,16 +622,13 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writer.write(" $lhv | $rhv")
         writer.newLine()
         writer.write("-$minus")
-        val quantityMinus = digitNumber(minus)
-        repeat(quantityLhv - quantityMinus + 3) { writer.write(" ") }
+        repeat(quantityLhv - "$minus".length + 3) { writer.write(" ") }
         writer.write("$result")
         writer.newLine()
-        repeat(quantityMinus + 1) { writer.write("-") }
+        repeat("$minus".length + 1) { writer.write("-") }
         writer.newLine()
-        var sum = quantityMinus + 1
-        var flag = quantityMinus
-        forSpace.setLength(0)
-
+        var sum = "$minus".length + 1
+        var flag = "$minus".length
 
         while (flag <= quantityLhv) {
             minus = 0
@@ -643,8 +638,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 
             if (flag == quantityLhv) {
                 while ("$forSpace$resAfterMinusInt".length != sum) forSpace.append(" ")
-                writer.write("$forSpace")
-                writer.write("$resAfterMinusInt")
+                writer.write("$forSpace$resAfterMinusInt")
             } else {
 
                 // запись результата вычитания
@@ -671,8 +665,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.write("$forSpace1-0")
                     writer.newLine()
                     writer.write("$forSpace")
-                    if (!marker) repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
-                    else repeat(digitNumber(resAfterMinusInt)) { writer.write("-") }
+                    if (!marker) repeat("$resAfterMinusInt".length + 1) { writer.write("-") }
+                    else repeat("$resAfterMinusInt".length) { writer.write("-") }
                     if (!marker) sum = "$forSpace1$minus".length + 1
                     else "$forSpace1$minus".length + 1
                 } else {
@@ -681,7 +675,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.write("$forSpace1-$minus")
                     writer.newLine()
                     writer.write("$forSpace1")
-                    repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
+                    repeat("$resAfterMinusInt".length + 1) { writer.write("-") }
                     sum = "$forSpace1$minus".length + 1
                 }
             }
