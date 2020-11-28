@@ -659,6 +659,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.write("$forSpace")
                     if (!marker) repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
                     else repeat(digitNumber(resAfterMinusInt)) { writer.write("-") }
+                    if (!marker) sum = "$forSpace1$minus".length + 1
+                    else "$forSpace1$minus".length + 1
                 } else {
                     minus = rhv * (resAfterMinusInt / rhv)
                     while ("$forSpace1$minus".length + 1 != sum) forSpace1.append(" ")
@@ -666,15 +668,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.newLine()
                     writer.write("$forSpace1")
                     repeat(digitNumber(resAfterMinusInt) + 1) { writer.write("-") }
-                }
-                if (resAfterMinusInt - minus == 0 && flag != quantityLhv - 1) sum =
-                    "$forSpace".length + digitNumber(resAfterMinusInt) + 1
-                else {
-                    if (!marker) {
-                        sum = "$forSpace".length + digitNumber(resAfterMinusInt) + 1
-                        marker = true
-                    } else sum = "$forSpace".length + digitNumber(resAfterMinusInt)
-
+                    sum = "$forSpace1$minus".length + 1
                 }
             }
             resAfterMinusInt -= minus
@@ -682,6 +676,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             forSpace1.setLength(0)
             flag++
             writer.newLine()
+            marker = true
         }
     }
     writer.close()
