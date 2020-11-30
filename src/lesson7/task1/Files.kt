@@ -557,8 +557,8 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    val forSpace1 = StringBuilder()
     val forSpace = StringBuilder()
+    val forSpace1 = StringBuilder()
     val result = lhv / rhv
     val quantityLhv = "$lhv".length
     val quantityRhv = "$rhv".length
