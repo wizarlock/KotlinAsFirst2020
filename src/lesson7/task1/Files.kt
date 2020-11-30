@@ -563,19 +563,25 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val quantityLhv = "$lhv".length
     val quantityRhv = "$rhv".length
     var zero = true
-    var coefficient: Double
-    var resMinus: Double
+    val coefficient: Double
+    val resMinus: Double
     var resAfterMinusInt: Int
     var minus: Int
-
+    val minuend: Double
     //для результата 0 и для случая, представленного ниже
 
-    coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
+    if (lhv / 10.0.pow(quantityLhv - quantityRhv) >= rhv) {
+        coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv) * rhv)
+        resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv)) - rhv * coefficient.toInt()
+        minuend = lhv / (10.0.pow(quantityLhv - quantityRhv))
+    } else {
+        coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
+        resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - rhv * coefficient.toInt()
+        minuend = lhv / (10.0.pow(quantityLhv - quantityRhv - 1))
+    }
     minus = rhv * coefficient.toInt()
-    resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - minus
     resAfterMinusInt = resMinus.toInt()
-
-    if (result == 0 || (lhv / 10.0.pow(quantityLhv - quantityRhv) < rhv && "$minus".length + 1 == quantityLhv)) {
+    if (result == 0 || digitNumber(minuend.toInt()) != "$minus".length) {
         if (result == 0) {
             if (quantityLhv > 1) {
                 writer.write("$lhv | $rhv")
@@ -610,15 +616,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 
     } else {
         forSpace.setLength(0)
-        if (lhv / 10.0.pow(quantityLhv - quantityRhv) >= rhv) {
-            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv) * rhv)
-            resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv)) - rhv * coefficient.toInt()
-        } else {
-            coefficient = lhv / (10.0.pow(quantityLhv - quantityRhv - 1) * rhv)
-            resMinus = (lhv / 10.0.pow(quantityLhv - quantityRhv - 1)) - rhv * coefficient.toInt()
-        }
         resAfterMinusInt = resMinus.toInt()
-        minus = rhv * coefficient.toInt()
         writer.write(" $lhv | $rhv")
         writer.newLine()
         writer.write("-$minus")
