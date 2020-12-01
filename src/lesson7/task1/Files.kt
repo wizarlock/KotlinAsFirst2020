@@ -678,7 +678,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                     writer.write("-$minus")
                     writer.newLine()
                     repeat(numberOfSpaces1) { writer.write(" ") }
-                    repeat("$resAfterMinusInt".length + 1) { writer.write("-") }
+                    repeat("$minus".length + 1) { writer.write("-") }
                     sum = "$minus".length + 1 + numberOfSpaces1
                 }
             }
