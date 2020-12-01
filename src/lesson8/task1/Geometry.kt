@@ -136,7 +136,11 @@ fun diameter(vararg points: Point): Segment {
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle = TODO()
+fun circleByDiameter(diameter: Segment): Circle {
+    val p1 = (diameter.begin.x + diameter.end.x) / 2
+    val p2 = (diameter.begin.y + diameter.end.y) / 2
+    return Circle(Point(p1, p2), diameter.begin.distance(diameter.end) / 2)
+}
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
@@ -187,6 +191,7 @@ fun lineByPoints(a: Point, b: Point): Line {
     return if (atan2(b.y - a.y, b.x - a.x) > 0) Line(a, atan2(b.y - a.y, b.x - a.x) % PI)
     else Line(a, (PI + (atan2(b.y - a.y, b.x - a.x))) % PI)
 }
+
 /**
  * Сложная (5 баллов)
  *
@@ -218,7 +223,32 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+
+    // середина 1 стороны
+    val p1 = (a.x + b.x) / 2
+    val p2 = (a.y + b.y) / 2
+
+    // середина 2 стороны
+    val p3 = (b.x + c.x) / 2
+    val p4 = (b.y + c.y) / 2
+
+    // уравнения 2 прямых
+    val a1 = b.x - a.x
+    val b1 = b.y - a.y
+    val c1 = p1 * a1 + p2 * b1
+    val a2 = c.x - b.x
+    val b2 = c.y - b.y
+    val c2 = p3 * a2 + p4 * b2
+
+    //точка их пересечения
+    val x0 = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1)
+    val y0 = (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1)
+
+    //радиус
+    val radius = sqrt(sqr(a.x - x0) + sqr(a.y - y0))
+    return Circle(Point(x0, y0), radius)
+}
 
 /**
  * Очень сложная (10 баллов)
@@ -231,5 +261,39 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
+fun minContainingCircle(vararg points: Point): Circle {
+    var flag = true
+    if (points.isEmpty()) throw IllegalArgumentException()
+    if (points.size == 1) return Circle(points[0], 0.0)
+    if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
+    //Проверяем, существует ли окружность, которая проходит через 2 самые удаленные точки и содержит все точки множества
+    val circle = circleByDiameter(diameter(*points))
+    for (point in points) if (!circle.contains(point)) flag = false
+    if (flag) return circle
+
+    //А теперь находим окружность с минимальным радиусом, которая содержит все точки и проходит через 3 точки
+    var minCircle = Circle(points[0], Double.MAX_VALUE)
+
+    // Здесь происходит очень странное действие, сначала я написал так:
+    // for (i in points.indices) {
+    //         for (k in i + 1 until points.size) {
+    //             for (j in k + 1 until points.size) {
+    // По моему мнению, это должно работать как швейцарские часы. НООО, оно не работает...
+    // Потыкав часик, обнаружил интересную вещь: если все циклы взять в in points.indices, то все работает
+    // Это делает программу более не эффективной, но зато она работает, не очень понимаю, почему она не работала при моем условии
+    // Но:
+
+    for (i in points.indices) {
+        for (k in points.indices) {
+            for (j in points.indices) {
+                flag = true
+                val newCircle = circleByThreePoints(points[i], points[k], points[j])
+                for (point in points) if (!newCircle.contains(point)) flag = false
+                if (!flag) continue
+                if (newCircle.radius < minCircle.radius) minCircle = newCircle
+            }
+        }
+    }
+    return minCircle
+}
