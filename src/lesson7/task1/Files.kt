@@ -557,8 +557,6 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    val forSpace = StringBuilder()
-    val forSpace1 = StringBuilder()
     val result = lhv / rhv
     val quantityLhv = "$lhv".length
     val quantityRhv = "$rhv".length
@@ -568,6 +566,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var resAfterMinusInt: Int
     var minus: Int
     val minuend: Double
+    var numberOfSpaces = 0
+    var numberOfSpaces1: Int
+
     //для результата 0 и для случая, представленного ниже
 
     if (lhv / 10.0.pow(quantityLhv - quantityRhv) >= rhv) {
@@ -583,39 +584,41 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     resAfterMinusInt = resMinus.toInt()
     if (result == 0 || digitNumber(minuend.toInt()) != "$minus".length) {
         if (result == 0) {
-            if (quantityLhv > 1) {
+            numberOfSpaces = if (quantityLhv > 1) {
                 writer.write("$lhv | $rhv")
-                while ("$forSpace".length + 2 != quantityLhv) forSpace.append(" ")
+                writer.newLine()
+                repeat(quantityLhv - 2) { writer.write(" ") }
+                quantityLhv - 2
             } else {
                 writer.write(" $lhv | $rhv")
-                while ("$forSpace".length + 1 != quantityLhv) forSpace.append(" ")
+                writer.newLine()
+                repeat(quantityLhv - 1) { writer.write(" ") }
+                quantityLhv - 1
             }
         } else {
             writer.write("$lhv | $rhv")
-            while ("$forSpace$minus".length + 1 != quantityLhv) forSpace.append(" ")
+            writer.newLine()
+            repeat(quantityLhv - 1 - "$minus".length) { writer.write(" ") }
         }
-        writer.newLine()
-        if (result == 0) writer.write("$forSpace-0")
-        else writer.write("$forSpace-$minus")
+        if (result == 0) writer.write("-0")
+        else writer.write("-$minus")
         repeat(3) { writer.write(" ") }
         writer.write("$result")
         writer.newLine()
-        if (result == 0) repeat("$forSpace".length + 2) { writer.write("-") }
+        if (result == 0) repeat(numberOfSpaces + 2) { writer.write("-") }
         else repeat(quantityLhv) { writer.write("-") }
         writer.newLine()
-        forSpace.setLength(0)
         if (result == 0)
             if (quantityLhv > 1) writer.write("$lhv")
             else writer.write(" $lhv")
         else {
-            while ("$forSpace$resAfterMinusInt".length != quantityLhv) forSpace.append(" ")
-            writer.write("$forSpace$resAfterMinusInt")
+            repeat(quantityLhv - "$resAfterMinusInt".length) { writer.write(" ") }
+            writer.write("$resAfterMinusInt")
         }
 
         //для результата не 0
 
     } else {
-        forSpace.setLength(0)
         resAfterMinusInt = resMinus.toInt()
         writer.write(" $lhv | $rhv")
         writer.newLine()
@@ -635,51 +638,51 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             digit %= 10
 
             if (flag == quantityLhv) {
-                while ("$forSpace$resAfterMinusInt".length != sum) forSpace.append(" ")
-                writer.write("$forSpace$resAfterMinusInt")
+                repeat(sum - "$resAfterMinusInt".length) { writer.write(" ") }
+                writer.write("$resAfterMinusInt")
             } else {
 
                 // запись результата вычитания
 
                 if (resAfterMinusInt == 0) {
-                    while ("$forSpace$resAfterMinusInt".length != sum) forSpace.append(" ")
-                    writer.write("$forSpace")
+                    repeat(sum - "$resAfterMinusInt".length) { writer.write(" ") }
+                    numberOfSpaces = sum - "$resAfterMinusInt".length
                     writer.write("0$digit")
                     resAfterMinusInt = digit
-                    sum = "$forSpace$resAfterMinusInt".length + 1
+                    sum = "$resAfterMinusInt".length + 1 + numberOfSpaces
                     zero = false
                 } else {
                     resAfterMinusInt = resAfterMinusInt * 10 + digit
-                    while ("$forSpace$resAfterMinusInt".length != sum + 1) forSpace.append(" ")
-                    writer.write("$forSpace$resAfterMinusInt")
-                    sum = "$forSpace$resAfterMinusInt".length
+                    repeat(sum + 1 - "$resAfterMinusInt".length) { writer.write(" ") }
+                    numberOfSpaces = sum + 1 - "$resAfterMinusInt".length
+                    writer.write("$resAfterMinusInt")
+                    sum = "$resAfterMinusInt".length + numberOfSpaces
                 }
                 writer.newLine()
 
                 // запись процесса вычитания
 
                 if (resAfterMinusInt < rhv) {
-                    while ("$forSpace1".length + 2 != sum) forSpace1.append(" ")
-                    writer.write("$forSpace1-0")
+                    repeat(sum - 2) { writer.write(" ") }
+                    numberOfSpaces1 = sum - 2
+                    writer.write("-0")
                     writer.newLine()
-                    writer.write("$forSpace")
+                    repeat(numberOfSpaces) { writer.write(" ") }
                     if (!zero) repeat("$resAfterMinusInt".length + 1) { writer.write("-") }
                     else repeat("$resAfterMinusInt".length) { writer.write("-") }
-                    if (!zero) sum = "$forSpace1$minus".length + 1
-                    else "$forSpace1$minus".length + 1
+                    sum = "$minus".length + 1 + numberOfSpaces1
                 } else {
                     minus = rhv * (resAfterMinusInt / rhv)
-                    while ("$forSpace1$minus".length + 1 != sum) forSpace1.append(" ")
-                    writer.write("$forSpace1-$minus")
+                    repeat(sum - "$minus".length - 1) { writer.write(" ") }
+                    numberOfSpaces1 = sum - "$minus".length - 1
+                    writer.write("-$minus")
                     writer.newLine()
-                    writer.write("$forSpace1")
+                    repeat(numberOfSpaces1) { writer.write(" ") }
                     repeat("$resAfterMinusInt".length + 1) { writer.write("-") }
-                    sum = "$forSpace1$minus".length + 1
+                    sum = "$minus".length + 1 + numberOfSpaces1
                 }
             }
             resAfterMinusInt -= minus
-            forSpace.setLength(0)
-            forSpace1.setLength(0)
             flag++
             writer.newLine()
             zero = true

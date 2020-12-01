@@ -3,10 +3,8 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.TODO
+import kotlin.math.*
 
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
@@ -82,14 +80,14 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double = TODO()
+    fun distance(other: Circle): Double = max(center.distance(other.center) - radius - other.radius, 0.0)
 
     /**
      * Тривиальная (1 балл)
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = TODO()
+    fun contains(p: Point): Boolean = center.distance(p) <= radius
 }
 
 /**
@@ -109,7 +107,28 @@ data class Segment(val begin: Point, val end: Point) {
  * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
-fun diameter(vararg points: Point): Segment = TODO()
+fun diameter(vararg points: Point): Segment {
+
+    // Если в множестве менее двух точек
+
+    if (points.size < 2) throw IllegalArgumentException()
+    var first = points[0]
+    var second = points[1]
+    var maxDistance = first.distance(second)
+
+    //Бегаем по всем точкам, ищем наибольшее расстояние
+
+    for (i in points.indices)
+        for (j in i + 1 until points.size) {
+            val distanceNow = points[i].distance(points[j])
+            if (distanceNow > maxDistance) {
+                maxDistance = distanceNow
+                first = points[i]
+                second = points[j]
+            }
+        }
+    return Segment(first, second)
+}
 
 /**
  * Простая (2 балла)
@@ -156,21 +175,25 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line = TODO()
+fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
 
 /**
  * Средняя (3 балла)
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line = TODO()
+fun lineByPoints(a: Point, b: Point): Line {
 
+    return if (atan2(b.y - a.y, b.x - a.x) > 0) Line(a, atan2(b.y - a.y, b.x - a.x) % PI)
+    else Line(a, (PI + (atan2(b.y - a.y, b.x - a.x))) % PI)
+}
 /**
  * Сложная (5 баллов)
  *
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
-fun bisectorByPoints(a: Point, b: Point): Line = TODO()
+fun bisectorByPoints(a: Point, b: Point): Line =
+    Line(Point((a.x + b.x) / 2, (a.y + b.y) / 2), ((lineByPoints(a, b).angle) + PI / 2) % PI)
 
 /**
  * Средняя (3 балла)
