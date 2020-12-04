@@ -89,8 +89,8 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) <= radius
-    fun pointContains(p: Point): Boolean = center.distance(p) < radius || center.distance(p).approximatelyEquals(radius)
+    fun contains(p: Point): Boolean = center.distance(p) < radius || center.distance(p).approximatelyEquals(radius)
+
 }
 
 
@@ -274,7 +274,7 @@ fun minContainingCircle(vararg points: Point): Circle {
     //Проверяем, существует ли окружность, которая проходит через 2 самые удаленные точки и содержит все точки множества
 
     val circle = circleByDiameter(diameter(*points))
-    for (point in points) if (!circle.pointContains(point)) flag = false
+    for (point in points) if (!circle.contains(point)) flag = false
     if (flag) return circle
 
     //А теперь находим окружность с минимальным радиусом, которая содержит все точки и проходит через 3 точки
@@ -285,7 +285,7 @@ fun minContainingCircle(vararg points: Point): Circle {
             for (j in k + 1 until points.size) {
                 flag = true
                 val newCircle = circleByThreePoints(points[i], points[k], points[j])
-                for (point in points) if (!newCircle.pointContains(point)) flag = false
+                for (point in points) if (!newCircle.contains(point)) flag = false
                 if (!flag) continue
                 if (newCircle.radius < minCircle.radius) minCircle = newCircle
             }
