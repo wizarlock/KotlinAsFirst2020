@@ -9,6 +9,8 @@ import kotlin.math.*
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
 
+fun Double.approximatelyEquals(that: Double) = abs(this - that) <= 1e-6
+
 /**
  * Точка на плоскости
  */
@@ -88,7 +90,9 @@ data class Circle(val center: Point, val radius: Double) {
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
     fun contains(p: Point): Boolean = center.distance(p) <= radius
+    fun pointContains(p: Point): Boolean = center.distance(p) < radius || center.distance(p).approximatelyEquals(radius)
 }
+
 
 /**
  * Отрезок между двумя точками
@@ -268,28 +272,20 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
 
     //Проверяем, существует ли окружность, которая проходит через 2 самые удаленные точки и содержит все точки множества
+
     val circle = circleByDiameter(diameter(*points))
-    for (point in points) if (!circle.contains(point)) flag = false
+    for (point in points) if (!circle.pointContains(point)) flag = false
     if (flag) return circle
 
     //А теперь находим окружность с минимальным радиусом, которая содержит все точки и проходит через 3 точки
+
     var minCircle = Circle(points[0], Double.MAX_VALUE)
-
-    // Здесь происходит очень странное действие, сначала я написал так:
-    // for (i in points.indices) {
-    //         for (k in i + 1 until points.size) {
-    //             for (j in k + 1 until points.size) {
-    // По моему мнению, это должно работать как швейцарские часы. НООО, оно не работает...
-    // Потыкав часик, обнаружил интересную вещь: если все циклы взять в in points.indices, то все работает
-    // Это делает программу более не эффективной, но зато она работает, не очень понимаю, почему она не работала при моем условии
-    // Но:
-
     for (i in points.indices) {
-        for (k in points.indices) {
-            for (j in points.indices) {
+        for (k in i + 1 until points.size) {
+            for (j in k + 1 until points.size) {
                 flag = true
                 val newCircle = circleByThreePoints(points[i], points[k], points[j])
-                for (point in points) if (!newCircle.contains(point)) flag = false
+                for (point in points) if (!newCircle.pointContains(point)) flag = false
                 if (!flag) continue
                 if (newCircle.radius < minCircle.radius) minCircle = newCircle
             }
