@@ -566,7 +566,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var resAfterMinusInt: Int
     var minus: Int
     val minuend: Double
-    var numberOfSpaces = 0
+    var numberOfSpaces: Int
     var numberOfSpaces1: Int
 
     //для результата 0 и для случая, представленного ниже
@@ -581,55 +581,44 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         minuend = lhv / (10.0.pow(quantityLhv - quantityRhv - 1))
     }
     minus = rhv * coefficient.toInt()
-    resAfterMinusInt = resMinus.toInt()
-    if (result == 0 || digitNumber(minuend.toInt()) != "$minus".length) {
-        if (result == 0) {
-            numberOfSpaces = if (quantityLhv > 1) {
-                writer.write("$lhv | $rhv")
-                writer.newLine()
-                repeat(quantityLhv - 2) { writer.write(" ") }
-                quantityLhv - 2
-            } else {
-                writer.write(" $lhv | $rhv")
-                writer.newLine()
-                repeat(quantityLhv - 1) { writer.write(" ") }
-                quantityLhv - 1
-            }
-        } else {
+    val quantityMinuend = digitNumber(minuend.toInt())
+    if (result == 0) {
+        numberOfSpaces = if (quantityLhv > 1) {
             writer.write("$lhv | $rhv")
             writer.newLine()
-            repeat(quantityLhv - 1 - "$minus".length) { writer.write(" ") }
+            repeat(quantityLhv - 2) { writer.write(" ") }
+            quantityLhv - 2
+        } else {
+            writer.write(" $lhv | $rhv")
+            writer.newLine()
+            repeat(quantityLhv - 1) { writer.write(" ") }
+            quantityLhv - 1
         }
-        if (result == 0) writer.write("-0")
-        else writer.write("-$minus")
+        writer.write("-0")
         repeat(3) { writer.write(" ") }
         writer.write("$result")
         writer.newLine()
-        if (result == 0) repeat(numberOfSpaces + 2) { writer.write("-") }
-        else repeat(quantityLhv) { writer.write("-") }
+        repeat(numberOfSpaces + 2) { writer.write("-") }
         writer.newLine()
-        if (result == 0)
-            if (quantityLhv > 1) writer.write("$lhv")
-            else writer.write(" $lhv")
-        else {
-            repeat(quantityLhv - "$resAfterMinusInt".length) { writer.write(" ") }
-            writer.write("$resAfterMinusInt")
-        }
+        if (quantityLhv > 1) writer.write("$lhv")
+        else writer.write(" $lhv")
 
         //для результата не 0
 
     } else {
         resAfterMinusInt = resMinus.toInt()
-        writer.write(" $lhv | $rhv")
+        if (quantityMinuend != "$minus".length) writer.write("$lhv | $rhv")
+        else writer.write(" $lhv | $rhv")
         writer.newLine()
         writer.write("-$minus")
-        repeat(quantityLhv - "$minus".length + 3) { writer.write(" ") }
+        repeat(quantityLhv - quantityMinuend + 3) { writer.write(" ") }
         writer.write("$result")
         writer.newLine()
         repeat("$minus".length + 1) { writer.write("-") }
         writer.newLine()
         var sum = "$minus".length + 1
         var flag = "$minus".length
+        if (quantityMinuend != "$minus".length) flag++
 
         while (flag <= quantityLhv) {
             minus = 0
